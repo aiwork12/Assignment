@@ -1,6 +1,6 @@
-## <center>第4回講座課題
+## <center>第4回講座課題<center>
 
-### <center>VPCの作成
+### <center>VPCの作成<center>
 ![VPC詳細](lecture04_images/第4回講座課題証跡_作成_VPC.png)
 
 - **ルートテーブル(private)**  
@@ -9,13 +9,13 @@
 - **ルートテーブル(public)**  
 ![ルートテーブル](lecture04_images/第4回講座課題証跡_ルートテーブル_public.png)
 
-### <center>EC2の作成
+### <center>EC2の作成<center>
 ![EC2詳細](lecture04_images/第4回講座課題証跡_作成_EC2.png)
 
 - **セキュリティグループ**  
 ![EC2セキュリティグループ](lecture04_images/第4回講座課題証跡_セキュリティグループ_EC2.png)
 
-### <center>RDSの作成
+### <center>RDSの作成<center>
 ![RDS詳細](lecture04_images/第4回講座課題証跡_作成_RDS.png)
 
 - **セキュリティグループ**  
@@ -24,10 +24,10 @@
 - **サブネットグループの作成**  
 ![サブネットグループ](lecture04_images/第4回講座課題証跡_作成_サブネットグループ.png)
 
-## <center>EC2からRDSへの接続
+## <center>EC2からRDSへの接続<center>
 ![Tera Term](lecture04_images/第4回講座課題証跡_接続_EC2→RDS.png)
 
-## <center>所感
+## <center>所感<center>
 
 - 学んだこと  
     - VPC／EC2／RDSについて、作成時に必要な用語を理解できました。

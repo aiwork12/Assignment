@@ -4,25 +4,28 @@
 ![VPC詳細](lecture04_images/第4回講座課題証跡_作成_VPC.png)
 
 - **ルートテーブル(private)**  
-![RDS詳細](lecture04_images/第4回講座課題証跡_ルートテーブル_private.png)
+![ルートテーブル](lecture04_images/第4回講座課題証跡_ルートテーブル_private.png)
 
 - **ルートテーブル(public)**  
-![RDS詳細](lecture04_images/第4回講座課題証跡_ルートテーブル_public.png)
+![ルートテーブル](lecture04_images/第4回講座課題証跡_ルートテーブル_public.png)
 
 ### <center>EC2の作成
 ![EC2詳細](lecture04_images/第4回講座課題証跡_作成_EC2.png)
 
 - **セキュリティグループ**  
-![RDS詳細](lecture04_images/第4回講座課題証跡_セキュリティグループ_EC2.png)
+![EC2セキュリティグループ](lecture04_images/第4回講座課題証跡_セキュリティグループ_EC2.png)
 
 ### <center>RDSの作成
 ![RDS詳細](lecture04_images/第4回講座課題証跡_作成_RDS.png)
 
 - **セキュリティグループ**  
-![RDS詳細](lecture04_images/第4回講座課題証跡_セキュリティグループ_RDS.png)
+![RDSセキュリティグループ](lecture04_images/第4回講座課題証跡_セキュリティグループ_RDS.png)
 
 - **サブネットグループの作成**  
-![RDS詳細](lecture04_images/第4回講座課題証跡_作成_サブネットグループ.png)
+![サブネットグループ](lecture04_images/第4回講座課題証跡_作成_サブネットグループ.png)
+
+## <center>EC2からRDSへの接続
+![Tera Term](lecture04_images/第4回講座課題証跡_接続_EC2→RDS.png)
 
 ## <center>所感
 

@@ -41,7 +41,7 @@
 ![設定ファイル](lecture05_images/nginx.conf.png)
 
 - **unicorn**  
-![設定ファイル](lecture05_images/unicorn.png)
+![設定ファイル](lecture05_images/unicorn.rb.png)
 
 - **Gemfile**  
 ![設定ファイル](lecture05_images/Gemfile.png)

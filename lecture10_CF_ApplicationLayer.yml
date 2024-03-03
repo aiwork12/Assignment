@@ -1,0 +1,134 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: lecture10-Application
+
+Parameters:
+
+  DBUsername:
+    Description: RDS UserName
+    NoEcho: true
+    Type: String
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: '[a-zA-Z0-9]*'
+  DBPassword:
+    Description: RDS PassWord
+    NoEcho: true
+    Type: String
+    MinLength: 8
+    MaxLength: 41
+
+Resources:
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: raisetech-keypair
+      ImageId: ami-0d889f77081190db1
+      InstanceType: t2.micro
+      Monitoring: false
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          SubnetId: !ImportValue pubsub1name
+          GroupSet:
+            - !ImportValue ec2sgname
+      Tags:
+        - Key: Name
+          Value: EC2-fromCF
+
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      AutoMinorVersionUpgrade: true
+      AvailabilityZone: "ap-northeast-1a"
+      BackupRetentionPeriod: 0
+      CopyTagsToSnapshot: false
+      DBInstanceIdentifier: Mysql-CF
+      DBSubnetGroupName: !ImportValue sngname
+      DeletionProtection: false
+      Engine: mysql
+      EngineVersion: '8.0.35'
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      MultiAZ: false
+      Port: 3306
+      PubliclyAccessible: false
+      StorageEncrypted: false
+      StorageType: gp2
+      VPCSecurityGroups:
+        - !ImportValue rdssgname
+      Tags:
+        - Key: Name
+          Value: RDS-fromCF
+
+  TargetGroup:
+    Type: "AWS::ElasticLoadBalancingV2::TargetGroup"
+    Properties:
+      VpcId: !ImportValue VPCname
+      Name: TG-fromCF
+      Protocol: HTTP
+      Port: 80
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: "/"
+      HealthCheckPort: "traffic-port"
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      HealthCheckTimeoutSeconds: 5
+      HealthCheckIntervalSeconds: 10
+      Matcher: 
+        HttpCode: 200
+      Tags: 
+        - Key: Name
+          Value: TG-fromCF
+      Targets: 
+        - Id: !Ref EC2Instance
+          Port: 80
+  InternetALB: 
+    Type: "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    Properties: 
+      Name: alb-CF
+      Scheme: "internet-facing"
+      IpAddressType: ipv4
+      LoadBalancerAttributes: 
+        - Key: "deletion_protection.enabled"
+          Value: false
+        - Key: "idle_timeout.timeout_seconds"
+          Value: 60
+      SecurityGroups: 
+        - !ImportValue albsgname
+      Subnets: 
+        - !ImportValue pubsub1name
+        - !ImportValue pubsub2name
+  ALBListener: 
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Properties: 
+      DefaultActions: 
+        - TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref InternetALB
+      Port: 80
+      Protocol: HTTP
+
+  s3Bucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: s3bucket-cf
+      VersioningConfiguration:
+        Status: Suspended
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault: 
+              SSEAlgorithm: AES256
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced 
+      Tags:
+        - Key: key
+          Value: value

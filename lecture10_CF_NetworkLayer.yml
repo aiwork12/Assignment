@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: lecture10-Network
+
+Resources: 
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.8.0/21
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: VPC-fromCF
+
+  IGW:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: IGW-fromCF
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref IGW
+
+  PubSub1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.8.0/24
+      Tags:
+        - Key: Name
+          Value: subnet-pub1-fromCF
+  PubSub2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-northeast-1c"
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.10.0/24
+      Tags:
+        - Key: Name
+          Value: subnet-pub2-fromCF
+  PubSubRT:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: rt-pub-fromCF
+  PubToInternet:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PubSubRT
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGW
+  AssocPub1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PubSub1
+      RouteTableId: !Ref PubSubRT
+  AssocPub2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PubSub2
+      RouteTableId: !Ref PubSubRT
+
+  PriSub1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-northeast-1a"
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.9.0/24
+      Tags:
+        - Key: Name
+          Value: subnet-pri1-fromCF
+  PriSub2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: "ap-northeast-1c"
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.11.0/24
+      Tags:
+        - Key: Name
+          Value: subnet-pri2-fromCF
+  PriSubRT:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: rt-pri-fromCF
+  AssocPri1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PriSub1
+      RouteTableId: !Ref PriSubRT
+  AssocPri2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PriSub2
+      RouteTableId: !Ref PriSubRT
+  RDSSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: dedicated to ut-rds
+      SubnetIds:
+        - !Ref PriSub1
+        - !Ref PriSub2
+      Tags:
+        - Key: Name
+          Value: sng-rds-fromCF
+
+Outputs:
+  subnet1:
+    Value: !Ref PubSub1
+    Export:
+      Name: pubsub1name
+  subnet2:
+    Value: !Ref PubSub2
+    Export:
+      Name: pubsub2name
+  VPC:
+    Value: !Ref VPC
+    Export:
+      Name: VPCname
+  sng:
+    Value: !Ref RDSSubnetGroup
+    Export:
+      Name: sngname

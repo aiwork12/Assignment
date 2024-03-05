@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: lecture10-Security
+
+Parameters:
+
+  MyIP:
+    Description: IP address allowed to access EC2
+    Type: String
+
+Resources: 
+
+  secGroup1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: ec2-sg-CF
+      GroupDescription: Allow SSH and HTTP access only MyIP
+      VpcId: !ImportValue VPCname
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIP
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !GetAtt secGroup3.GroupId
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: SG-EC2-fromCF
+  secGroup2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: rds-sg-CF
+      GroupDescription: Allow connections from EC2 instances with SG-EC2-fromCF attached
+      VpcId: !ImportValue VPCname
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !GetAtt secGroup1.GroupId
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: SG-RDS-fromCF
+  secGroup3:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: alb-sg-CF
+      GroupDescription: Allow access to ALB from MyIP on port 80
+      VpcId: !ImportValue VPCname
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref MyIP
+      Tags:
+        - Key: Name
+          Value: SG-ALB-fromCF
+
+Outputs:
+  secGroup1:
+    Value: !Ref secGroup1
+    Export:
+      Name: ec2sgname
+  secGroup2:
+    Value: !Ref secGroup2
+    Export:
+      Name: rdssgname
+  secGroup3:
+    Value: !Ref secGroup3
+    Export:
+      Name: albsgname
